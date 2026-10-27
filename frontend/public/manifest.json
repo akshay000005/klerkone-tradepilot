@@ -1,0 +1,17 @@
+{
+  "short_name": "TradePilot",
+  "name": "KlerkOne TradePilot — Automated Stock Trading",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M3 13h4v8H3v-8zm7-8h4v16h-4V5zm7 5h4v11h-4V10z'/></svg>",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0b0f19",
+  "theme_color": "#0b0f19",
+  "display": "standalone",
+  "orientation": "portrait-primary"
+}

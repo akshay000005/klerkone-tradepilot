@@ -1,0 +1,28 @@
+{
+  "name": "klerkone-tradepilot",
+  "version": "1.0.0",
+  "description": "KlerkOne TradePilot — Automated Indian Stock Trading Platform (NSE / FYERS)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev": "node scripts/dev.js",
+    "tunnel": "npx cloudflared tunnel --url http://localhost:5173",
+    "test": "npm --prefix backend test",
+    "test:watch": "npm --prefix backend run test:watch",
+    "build": "npm --prefix backend install && npm --prefix frontend install && npm --prefix frontend run build",
+    "start": "node backend/src/server.js"
+  },
+  "keywords": [
+    "trading",
+    "algorithmic-trading",
+    "fyers",
+    "nse",
+    "india-stocks",
+    "quantitative"
+  ],
+  "author": "KlerkOne",
+  "license": "UNLICENSED"
+}

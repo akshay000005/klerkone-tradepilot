@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: tradepilot
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DEFAULT_TRADING_MODE
+        value: PAPER
+      - key: FYERS_APP_ID
+        sync: false
+      - key: FYERS_SECRET_KEY
+        sync: false
