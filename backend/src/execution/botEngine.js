@@ -71,10 +71,11 @@ export class AutonomousBotEngine {
       return;
     }
 
-    // In LIVE mode, strictly respect NSE Indian market trading hours (9:15 AM - 3:30 PM IST, Mon-Fri)
-    if (mode === 'LIVE' && !this._isMarketOpenSession()) {
+    // Strictly respect NSE Indian market trading hours (9:15 AM - 3:30 PM IST, Mon-Fri)
+    // Outside market hours, bot stands by and will automatically execute when market opens at 09:15 AM IST
+    if (!this._isMarketOpenSession()) {
       const ist = this._getISTTime();
-      this.lastLogMessage = `NSE Equity Market is closed. Auto-bot will activate at 09:15 AM IST (Mon-Fri). Current IST: ${String(ist.hours).padStart(2, '0')}:${String(ist.minutes).padStart(2, '0')}`;
+      this.lastLogMessage = `NSE Market Closed (Hours: 09:15 - 15:30 IST, Mon-Fri). Bot on standby, will auto-activate at 09:15 AM IST. Current IST: ${String(ist.hours).padStart(2, '0')}:${String(ist.minutes).padStart(2, '0')}`;
       return;
     }
 

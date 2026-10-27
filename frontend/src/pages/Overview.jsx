@@ -122,11 +122,21 @@ export default function Overview() {
         <div className="p-4 rounded-xl bg-[#111827] border border-gray-800 space-y-2">
           <div className="flex items-center justify-between text-xs text-gray-400">
             <span>Today's Realised P&L</span>
-            {realisedPnL >= 0 ? (
-              <TrendingUp className="w-4 h-4 text-emerald-400" />
-            ) : (
-              <TrendingDown className="w-4 h-4 text-rose-400" />
-            )}
+            <div className="flex items-center gap-1.5">
+              {settings?.trading_mode === 'PAPER' && realisedPnL !== 0 && (
+                <button
+                  onClick={resetPaperSession}
+                  className="text-[10px] text-gray-400 hover:text-emerald-400 underline font-mono cursor-pointer"
+                >
+                  Reset
+                </button>
+              )}
+              {realisedPnL >= 0 ? (
+                <TrendingUp className="w-4 h-4 text-emerald-400" />
+              ) : (
+                <TrendingDown className="w-4 h-4 text-rose-400" />
+              )}
+            </div>
           </div>
           <div className={`text-2xl font-bold font-mono ${realisedPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
             {realisedPnL >= 0 ? '+' : ''}₹{realisedPnL.toFixed(2)}
