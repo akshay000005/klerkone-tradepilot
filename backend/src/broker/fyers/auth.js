@@ -59,28 +59,43 @@ export async function exchangeAuthCodeForToken({
     throw new Error('FYERS_APP_ID and FYERS_SECRET_KEY must be provided');
   }
 
-  const appIdHash = generateAppIdHash(appId, secretKey);
-  const payload = {
-    grant_type: 'authorization_code',
-    appIdHash,
-    code: authCode,
-  };
+  const baseAppId = appId.split('-')[0];
+  const candidateAppIds = Array.from(new Set([
+    appId,
+    `${baseAppId}-200`,
+    baseAppId,
+    `${baseAppId}-100`,
+  ]));
 
-  const response = await fetch('https://api-t1.fyers.in/api/v3/validate-authcode', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
+  let lastError = null;
+  for (const candidate of candidateAppIds) {
+    const appIdHash = generateAppIdHash(candidate, secretKey);
+    const payload = {
+      grant_type: 'authorization_code',
+      appIdHash,
+      code: authCode,
+    };
 
-  const data = await response.json();
+    try {
+      const response = await fetch('https://api-t1.fyers.in/api/v3/validate-authcode', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-  if (data.s !== 'ok' || !data.access_token) {
-    throw new Error(`FYERS Authentication failed: ${data.message || JSON.stringify(data)}`);
+      const data = await response.json();
+      if (data.s === 'ok' && data.access_token) {
+        setActiveToken(data.access_token);
+        return {
+          accessToken: data.access_token,
+          message: 'FYERS Token generated successfully.',
+        };
+      }
+      lastError = data.message || JSON.stringify(data);
+    } catch (err) {
+      lastError = err.message;
+    }
   }
 
-  setActiveToken(data.access_token);
-  return {
-    accessToken: data.access_token,
-    message: 'FYERS Token generated successfully.',
-  };
+  throw new Error(`FYERS Authentication failed: ${lastError}`);
 }
