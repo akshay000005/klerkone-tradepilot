@@ -61,14 +61,36 @@ export const repository = {
     memStore.trades = memStore.trades.filter((t) => t.trading_mode !== 'PAPER');
 
     const today = new Date().toISOString().split('T')[0];
-    const key = `${today}:PAPER`;
-    delete memStore.dailyRisk[key];
+    const key = `${today}_PAPER`;
+    const settings = await this.getUserSettings();
+    const startingCapital = settings.allocated_capital || 50000;
+    const dailyLossLimit = Number(((startingCapital * (settings.daily_loss_limit || 1.5)) / 100).toFixed(2));
+
+    // Clear all existing PAPER risk entries regardless of date or key format
+    for (const k of Object.keys(memStore.dailyRisk)) {
+      if (k.includes('PAPER')) {
+        delete memStore.dailyRisk[k];
+      }
+    }
+
+    memStore.dailyRisk[key] = {
+      id: uuidv4(),
+      trading_date: today,
+      trading_mode: 'PAPER',
+      starting_capital: startingCapital,
+      realised_pnl: 0,
+      unrealised_pnl: 0,
+      daily_loss_limit: dailyLossLimit,
+      trading_halted: false,
+      halt_reason: null,
+      updated_at: new Date().toISOString(),
+    };
 
     if (supabase) {
       await supabase.from('orders').delete().eq('trading_mode', 'PAPER');
       await supabase.from('positions').delete().eq('trading_mode', 'PAPER');
       await supabase.from('trades').delete().eq('trading_mode', 'PAPER');
-      await supabase.from('daily_risk_state').delete().eq('trading_mode', 'PAPER').eq('date', today);
+      await supabase.from('daily_risk_state').delete().eq('trading_mode', 'PAPER');
     }
 
     await this.recordAuditLog({
@@ -78,7 +100,7 @@ export const repository = {
       outcome: 'INFO',
     });
 
-    return { success: true, message: 'Paper trading session and circuit breaker reset successfully.' };
+    return { success: true, message: 'Paper trading session and circuit breaker reset successfully to ₹0.00.' };
   },
 
   isSupabaseConnected() {

@@ -505,6 +505,8 @@ router.post('/broker/fyers/manual-token', async (req, res) => {
 router.post('/paper/reset', async (req, res) => {
   try {
     mockBroker.resetStore();
+    botEngine.totalAutoTrades = 0;
+    botEngine.lastLogMessage = 'Paper trading session reset. Ready for market open.';
     const result = await repository.resetPaperTrading();
     res.json(result);
   } catch (err) {
