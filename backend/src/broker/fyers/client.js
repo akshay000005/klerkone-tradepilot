@@ -19,7 +19,9 @@ export class FyersAdapter extends IBrokerAdapter {
   }
 
   async _request(endpoint, { method = 'GET', body = null } = {}) {
-    const url = `${this.baseUrl}${endpoint}`;
+    // FYERS Data API (/data/quotes, /data/history) lives under https://api-t1.fyers.in without /api/v3
+    const base = endpoint.startsWith('/data/') ? 'https://api-t1.fyers.in' : this.baseUrl;
+    const url = `${base}${endpoint}`;
     const headers = {
       Authorization: this.getAuthHeader(),
       'Content-Type': 'application/json',

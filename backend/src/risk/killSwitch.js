@@ -66,6 +66,8 @@ export class KillSwitch {
     await repository.updateDailyRiskState(today, tradingMode, {
       trading_halted: false,
       halt_reason: null,
+      realised_pnl: 0,
+      unrealised_pnl: 0,
     });
 
     await repository.recordAuditLog({
