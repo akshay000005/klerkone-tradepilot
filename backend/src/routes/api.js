@@ -1,6 +1,6 @@
 import express from 'express';
 import { repository } from '../db/repository.js';
-import { getRedactedConfig } from '../config/env.js';
+import { env, getRedactedConfig } from '../config/env.js';
 import { MockBrokerAdapter } from '../broker/mock/mockBroker.js';
 import { FyersAdapter } from '../broker/fyers/client.js';
 import { generateFyersAuthUrl, exchangeAuthCodeForToken, isTokenValid, setActiveToken } from '../broker/fyers/auth.js';
