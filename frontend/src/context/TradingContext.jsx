@@ -48,11 +48,33 @@ export function TradingProvider({ children }) {
     }
   };
 
-  // Poll state every 4 seconds
+  // Poll state every 2 seconds with real-time WebSocket enhancement
   useEffect(() => {
     fetchSystemData();
-    const interval = setInterval(fetchSystemData, 4000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchSystemData, 2000);
+
+    let ws = null;
+    try {
+      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${proto}//${window.location.host}/ws`;
+      ws = new WebSocket(wsUrl);
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.type === 'TICK_UPDATE' || msg.type === 'ORDER_UPDATE' || msg.type === 'POSITION_UPDATE') {
+            fetchSystemData();
+          }
+        } catch (e) {}
+      };
+    } catch (e) {}
+
+    return () => {
+      clearInterval(interval);
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
   }, [fetchSystemData]);
 
   const switchTradingMode = async (targetMode) => {

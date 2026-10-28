@@ -31,7 +31,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-[#0e1320] border-b border-gray-800 px-6 overflow-x-auto">
+    <nav className="hidden md:block bg-[#0e1320] border-b border-gray-800 px-6 overflow-x-auto">
       <div className="flex items-center space-x-1 min-w-max py-1.5">
         {navItems.map((item) => {
           const Icon = item.icon;

@@ -37,26 +37,26 @@ export default function Scanner() {
     }
   };
 
-  const fetchScanner = async () => {
-    setLoading(true);
+  const fetchScanner = async (isInitial = false) => {
+    if (isInitial) setLoading(true);
     try {
       const res = await fetch('/api/v1/scanner');
       const data = await res.json();
       if (res.ok) {
         setScannerData(data.results || []);
-      } else {
+      } else if (isInitial) {
         addToast(data.error || 'Failed to scan market', 'error');
       }
     } catch (err) {
-      addToast(err.message, 'error');
+      if (isInitial) addToast(err.message, 'error');
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchScanner();
-    const interval = setInterval(fetchScanner, 8000);
+    fetchScanner(true);
+    const interval = setInterval(() => fetchScanner(false), 2000);
     return () => clearInterval(interval);
   }, []);
 
