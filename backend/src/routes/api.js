@@ -424,8 +424,17 @@ router.post('/backtest/sensitivity', async (req, res) => {
 // ------------------------------------------------------------------------------
 router.get('/broker/fyers/auth-url', (req, res) => {
   try {
-    const authUrl = generateFyersAuthUrl({});
-    res.json({ authUrl });
+    // Automatically detect cloud host (e.g. klerkone-tradepilot.onrender.com)
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:5000';
+    const proto = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+    const dynamicRedirectUri = `${proto}://${host}/api/v1/broker/fyers/callback`;
+
+    const redirectUri = env.FYERS_REDIRECT_URI && !env.FYERS_REDIRECT_URI.includes('localhost')
+      ? env.FYERS_REDIRECT_URI
+      : dynamicRedirectUri;
+
+    const authUrl = generateFyersAuthUrl({ redirectUri });
+    res.json({ authUrl, redirectUri });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -445,10 +454,23 @@ router.get('/broker/fyers/callback', async (req, res) => {
 
     res.send(`
       <html>
-        <body style="font-family: sans-serif; background: #0b0f19; color: #10b981; text-align: center; padding-top: 50px;">
-          <h2>FYERS OAuth Session Connected Successfully!</h2>
-          <p style="color: #9ca3af;">Access token exchanged and verified. You may return to the TradePilot dashboard.</p>
-          <script>setTimeout(() => window.close(), 3000);</script>
+        <head><title>FYERS Connected</title></head>
+        <body style="font-family: system-ui, sans-serif; background: #0b0f19; color: #10b981; text-align: center; padding-top: 60px;">
+          <h2 style="font-size: 24px; margin-bottom: 10px;">✅ FYERS Connected Successfully!</h2>
+          <p style="color: #9ca3af; font-size: 14px;">Real live NSE market data is now active in TradePilot.</p>
+          <p style="color: #6366f1; font-size: 13px;">Returning to dashboard...</p>
+          <script>
+            try {
+              if (window.opener) {
+                window.opener.location.reload();
+                setTimeout(() => window.close(), 1500);
+              } else {
+                setTimeout(() => { window.location.href = '/'; }, 1500);
+              }
+            } catch (e) {
+              setTimeout(() => { window.location.href = '/'; }, 1500);
+            }
+          </script>
         </body>
       </html>
     `);

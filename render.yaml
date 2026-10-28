@@ -17,3 +17,5 @@ services:
         sync: false
       - key: FYERS_SECRET_KEY
         sync: false
+      - key: FYERS_REDIRECT_URI
+        value: https://klerkone-tradepilot.onrender.com/api/v1/broker/fyers/callback
