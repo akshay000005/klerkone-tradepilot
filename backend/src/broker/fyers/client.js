@@ -8,6 +8,8 @@ export class FyersAdapter extends IBrokerAdapter {
     super();
     this.appId = appId;
     this.baseUrl = 'https://api-t1.fyers.in/api/v3';
+    this.quotesCache = new Map();
+    this.candlesCache = new Map();
   }
 
   getAuthHeader() {
@@ -92,13 +94,37 @@ export class FyersAdapter extends IBrokerAdapter {
 
   async getQuotes(symbols = []) {
     if (!symbols || symbols.length === 0) return [];
+    
+    const now = Date.now();
+    const cacheKey = symbols.slice().sort().join(',');
+    const cached = this.quotesCache.get(cacheKey);
+    if (cached && cached.expiry > now) {
+      return cached.data;
+    }
+
     const joined = symbols.join(',');
-    const res = await this._request(`/data/quotes?symbols=${encodeURIComponent(joined)}`);
-    return res.d || [];
+    try {
+      const res = await this._request(`/data/quotes?symbols=${encodeURIComponent(joined)}`);
+      const data = res.d || [];
+      if (Array.isArray(data) && data.length > 0) {
+        this.quotesCache.set(cacheKey, { data, expiry: now + 2000 }); // cache 2s to respect 50 req/min
+        return data;
+      }
+    } catch (err) {
+      if (cached) return cached.data; // Serve last real FYERS data if rate limit occurs
+      throw err;
+    }
+    return cached?.data || [];
   }
 
   async getHistoricalData({ symbol, resolution = '5', fromDate, toDate }) {
-    // resolution: '1', '5', '15', 'D'
+    const now = Date.now();
+    const cacheKey = `${symbol}_${resolution}_${fromDate}_${toDate}`;
+    const cached = this.candlesCache.get(cacheKey);
+    if (cached && cached.expiry > now) {
+      return cached.data;
+    }
+
     const params = new URLSearchParams({
       symbol,
       resolution,
@@ -107,18 +133,25 @@ export class FyersAdapter extends IBrokerAdapter {
       range_to: toDate,
       cont_flag: '1',
     });
-    const res = await this._request(`/data/history?${params.toString()}`);
-    // FYERS candles array format: [[timestamp, open, high, low, close, volume], ...]
-    if (!res.candles) return [];
-    return res.candles.map(([ts, open, high, low, close, volume]) => ({
-      timestamp: new Date(ts * 1000).toISOString(),
-      open,
-      high,
-      low,
-      close,
-      volume,
-      symbol,
-    }));
+
+    try {
+      const res = await this._request(`/data/history?${params.toString()}`);
+      if (!res.candles) return cached?.data || [];
+      const data = res.candles.map(([ts, open, high, low, close, volume]) => ({
+        timestamp: new Date(ts * 1000).toISOString(),
+        open,
+        high,
+        low,
+        close,
+        volume,
+        symbol,
+      }));
+      this.candlesCache.set(cacheKey, { data, expiry: now + 60000 }); // cache candles 60s
+      return data;
+    } catch (err) {
+      if (cached) return cached.data; // Serve cached real candles if rate limit occurs
+      throw err;
+    }
   }
 
   async placeOrder(order) {

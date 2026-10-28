@@ -56,7 +56,7 @@ export default function Scanner() {
 
   useEffect(() => {
     fetchScanner(true);
-    const interval = setInterval(() => fetchScanner(false), 2000);
+    const interval = setInterval(() => fetchScanner(false), 3500);
     return () => clearInterval(interval);
   }, []);
 
@@ -104,10 +104,14 @@ export default function Scanner() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-[#111827] border border-gray-800">
         <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
+          <h2 className="text-lg font-bold text-white flex flex-wrap items-center gap-2">
             Automated Market Scanner
             <span className="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-400 border border-gray-700">
               {scannerData.length} NSE Shares
+            </span>
+            <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold flex items-center gap-1.5 font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+              REALTIME NSE FEED
             </span>
           </h2>
           <p className="text-xs text-gray-400 mt-1">

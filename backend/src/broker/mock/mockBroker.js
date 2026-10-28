@@ -17,16 +17,16 @@ export class MockBrokerAdapter extends IBrokerAdapter {
     this.positions = [];
     this.holdings = [];
     this.simulatedQuotes = new Map([
-      ['NSE:RELIANCE-EQ', { symbol: 'NSE:RELIANCE-EQ', ltp: 2540.50, high: 2560.00, low: 2530.00, open: 2535.00, prev_close_price: 2530.00, ch: 10.50, chp: 0.41, volume: 1540000 }],
-      ['NSE:TCS-EQ', { symbol: 'NSE:TCS-EQ', ltp: 3820.00, high: 3845.00, low: 3805.00, open: 3810.00, prev_close_price: 3815.00, ch: 5.00, chp: 0.13, volume: 820000 }],
-      ['NSE:HDFCBANK-EQ', { symbol: 'NSE:HDFCBANK-EQ', ltp: 1650.25, high: 1665.00, low: 1642.00, open: 1645.00, prev_close_price: 1640.00, ch: 10.25, chp: 0.63, volume: 2450000 }],
-      ['NSE:INFY-EQ', { symbol: 'NSE:INFY-EQ', ltp: 1785.60, high: 1795.00, low: 1770.00, open: 1775.00, prev_close_price: 1772.00, ch: 13.60, chp: 0.77, volume: 1200000 }],
-      ['NSE:ICICIBANK-EQ', { symbol: 'NSE:ICICIBANK-EQ', ltp: 1220.40, high: 1228.00, low: 1215.00, open: 1218.00, prev_close_price: 1212.00, ch: 8.40, chp: 0.69, volume: 1890000 }],
-      ['NSE:SBIN-EQ', { symbol: 'NSE:SBIN-EQ', ltp: 785.10, high: 792.00, low: 780.00, open: 782.00, prev_close_price: 781.00, ch: 4.10, chp: 0.52, volume: 3100000 }],
-      ['NSE:BHARTIARTL-EQ', { symbol: 'NSE:BHARTIARTL-EQ', ltp: 1480.00, high: 1492.00, low: 1475.00, open: 1478.00, prev_close_price: 1474.00, ch: 6.00, chp: 0.41, volume: 950000 }],
-      ['NSE:ITC-EQ', { symbol: 'NSE:ITC-EQ', ltp: 495.20, high: 498.50, low: 492.00, open: 493.00, prev_close_price: 494.00, ch: 1.20, chp: 0.24, volume: 2700000 }],
-      ['NSE:LT-EQ', { symbol: 'NSE:LT-EQ', ltp: 3560.00, high: 3585.00, low: 3540.00, open: 3550.00, prev_close_price: 3545.00, ch: 15.00, chp: 0.42, volume: 450000 }],
-      ['NSE:TATAMOTORS-EQ', { symbol: 'NSE:TATAMOTORS-EQ', ltp: 890.30, high: 898.00, low: 885.00, open: 888.00, prev_close_price: 886.00, ch: 4.30, chp: 0.49, volume: 2150000 }],
+      ['NSE:RELIANCE-EQ', { symbol: 'NSE:RELIANCE-EQ', ltp: 1158.00, high: 1204.30, low: 1156.40, open: 1194.50, prev_close_price: 1196.20, ch: -38.20, chp: -3.19, volume: 21866598 }],
+      ['NSE:SBIN-EQ', { symbol: 'NSE:SBIN-EQ', ltp: 956.80, high: 968.40, low: 947.20, open: 950.00, prev_close_price: 945.10, ch: 11.70, chp: 1.24, volume: 11012192 }],
+      ['NSE:TCS-EQ', { symbol: 'NSE:TCS-EQ', ltp: 2460.00, high: 2510.00, low: 2452.00, open: 2505.00, prev_close_price: 2496.90, ch: -36.90, chp: -1.48, volume: 2540047 }],
+      ['NSE:INFY-EQ', { symbol: 'NSE:INFY-EQ', ltp: 1123.15, high: 1165.00, low: 1120.00, open: 1160.00, prev_close_price: 1163.00, ch: -39.85, chp: -3.43, volume: 15636449 }],
+      ['NSE:HDFCBANK-EQ', { symbol: 'NSE:HDFCBANK-EQ', ltp: 685.30, high: 692.00, low: 681.00, open: 682.00, prev_close_price: 680.20, ch: 5.10, chp: 0.75, volume: 28534206 }],
+      ['NSE:ICICIBANK-EQ', { symbol: 'NSE:ICICIBANK-EQ', ltp: 1377.60, high: 1395.00, low: 1374.00, open: 1390.00, prev_close_price: 1386.90, ch: -9.30, chp: -0.67, volume: 9519327 }],
+      ['NSE:BHARTIARTL-EQ', { symbol: 'NSE:BHARTIARTL-EQ', ltp: 1940.00, high: 1960.00, low: 1930.00, open: 1950.00, prev_close_price: 1945.00, ch: -5.00, chp: -0.26, volume: 3200000 }],
+      ['NSE:ITC-EQ', { symbol: 'NSE:ITC-EQ', ltp: 478.50, high: 484.00, low: 476.00, open: 480.00, prev_close_price: 479.20, ch: -0.70, chp: -0.15, volume: 8500000 }],
+      ['NSE:LT-EQ', { symbol: 'NSE:LT-EQ', ltp: 3620.00, high: 3655.00, low: 3610.00, open: 3640.00, prev_close_price: 3635.00, ch: -15.00, chp: -0.41, volume: 1200000 }],
+      ['NSE:TATAMOTORS-EQ', { symbol: 'NSE:TATAMOTORS-EQ', ltp: 865.00, high: 875.00, low: 860.00, open: 870.00, prev_close_price: 868.50, ch: -3.50, chp: -0.40, volume: 5400000 }],
     ]);
   }
 

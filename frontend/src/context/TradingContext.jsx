@@ -48,10 +48,10 @@ export function TradingProvider({ children }) {
     }
   };
 
-  // Poll state every 2 seconds with real-time WebSocket enhancement
+  // Poll state every 3.5 seconds with real-time WebSocket enhancement
   useEffect(() => {
     fetchSystemData();
-    const interval = setInterval(fetchSystemData, 2000);
+    const interval = setInterval(fetchSystemData, 3500);
 
     let ws = null;
     try {
