@@ -81,12 +81,11 @@ export class MockBrokerAdapter extends IBrokerAdapter {
       }
     }
 
-    // 2. Simulated quotes fallback
+    // 2. Exact static closing quotes (Zero jitter outside market hours)
     return symbols.map((sym) => {
       const q = this.simulatedQuotes.get(sym);
       if (q) {
-        const jitter = (Math.random() - 0.5) * 0.2;
-        const currentLtp = Number((q.ltp + jitter).toFixed(2));
+        const currentLtp = q.ltp;
         return {
           n: sym,
           s: 'ok',
@@ -94,11 +93,11 @@ export class MockBrokerAdapter extends IBrokerAdapter {
             symbol: sym,
             lp: currentLtp,
             open_price: q.open,
-            high_price: Math.max(q.high, currentLtp),
-            low_price: Math.min(q.low, currentLtp),
+            high_price: q.high,
+            low_price: q.low,
             prev_close_price: q.prev_close_price,
-            ch: Number((currentLtp - q.prev_close_price).toFixed(2)),
-            chp: Number((((currentLtp - q.prev_close_price) / q.prev_close_price) * 100).toFixed(2)),
+            ch: q.ch,
+            chp: q.chp,
             volume: q.volume,
           },
         };
