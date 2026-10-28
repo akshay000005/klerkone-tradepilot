@@ -36,13 +36,13 @@ export default function Settings() {
     loadAuditLogs();
   }, []);
 
-  const handleConnectFyers = async () => {
+  const handleConnectFyers = async (mode = 'cloud') => {
     try {
-      const res = await fetch('/api/v1/broker/fyers/auth-url');
+      const res = await fetch(`/api/v1/broker/fyers/auth-url?mode=${mode}`);
       const data = await res.json();
       if (data.authUrl) {
         window.open(data.authUrl, '_blank', 'width=600,height=700');
-        addToast('FYERS OAuth login opened in popup. Authorize and return.', 'info');
+        addToast(`FYERS OAuth login opened (${mode === 'localhost' ? 'localhost fallback' : 'cloud'}). Authorize and return.`, 'info');
       } else {
         addToast(data.error || 'Failed to generate FYERS authorization URL. Check .env configuration.', 'error');
       }
@@ -207,16 +207,54 @@ export default function Settings() {
             </div>
 
             <p className="text-[11px] text-gray-400 leading-relaxed">
-              FYERS OAuth tokens expire daily as per SEBI regulations. Click below to launch the official FYERS authorization login to generate or renew your daily access token.
+              FYERS OAuth tokens expire daily as per SEBI regulations. Launch login below to renew your daily session:
             </p>
 
-            <button
-              onClick={handleConnectFyers}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-colors shadow-lg shadow-indigo-900/30 cursor-pointer"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Authorize / Connect FYERS API v3
-            </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                onClick={() => handleConnectFyers('cloud')}
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors shadow-lg shadow-indigo-900/30 cursor-pointer"
+                title="Use if FYERS dashboard Redirect URL is set to klerkone-tradepilot.onrender.com"
+              >
+                <ExternalLink className="w-4 h-4" />
+                1-Click Cloud Login
+              </button>
+              <button
+                onClick={() => handleConnectFyers('localhost')}
+                className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 font-semibold text-xs transition-colors cursor-pointer"
+                title="Use if FYERS dashboard still has localhost:5000 registered"
+              >
+                <ExternalLink className="w-4 h-4" />
+                Localhost Fallback Login
+              </button>
+            </div>
+
+            <div className="p-2.5 rounded-lg bg-gray-900/80 border border-gray-800 text-[11px] space-y-1">
+              <div className="flex items-center justify-between text-gray-400">
+                <span>FYERS Dashboard Redirect URL:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText('https://klerkone-tradepilot.onrender.com/api/v1/broker/fyers/callback');
+                    addToast('Redirect URL copied to clipboard!', 'info');
+                  }}
+                  className="text-indigo-400 hover:text-indigo-300 underline font-mono text-[10px] cursor-pointer"
+                >
+                  Copy URL
+                </button>
+              </div>
+              <code className="text-gray-300 font-mono block text-[10px] break-all select-all">
+                https://klerkone-tradepilot.onrender.com/api/v1/broker/fyers/callback
+              </code>
+              <a
+                href="https://myapi.fyers.in"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block text-[10px] text-indigo-400 hover:underline pt-0.5"
+              >
+                Open FYERS Portal (myapi.fyers.in) &rarr;
+              </a>
+            </div>
 
             {/* Direct / Mobile Token Link */}
             <div className="pt-3 border-t border-gray-800 space-y-2">

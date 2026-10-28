@@ -429,9 +429,15 @@ router.get('/broker/fyers/auth-url', (req, res) => {
     const proto = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
     const dynamicRedirectUri = `${proto}://${host}/api/v1/broker/fyers/callback`;
 
-    const redirectUri = env.FYERS_REDIRECT_URI && !env.FYERS_REDIRECT_URI.includes('localhost')
-      ? env.FYERS_REDIRECT_URI
-      : dynamicRedirectUri;
+    const redirectMode = req.query.mode;
+    let redirectUri;
+    if (redirectMode === 'localhost') {
+      redirectUri = 'http://localhost:5000/api/v1/broker/fyers/callback';
+    } else {
+      redirectUri = env.FYERS_REDIRECT_URI && !env.FYERS_REDIRECT_URI.includes('localhost')
+        ? env.FYERS_REDIRECT_URI
+        : dynamicRedirectUri;
+    }
 
     const authUrl = generateFyersAuthUrl({ redirectUri });
     res.json({ authUrl, redirectUri });
