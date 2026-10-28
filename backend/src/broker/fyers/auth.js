@@ -1,8 +1,27 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 import { env } from '../../config/env.js';
 
-let activeAccessToken = env.FYERS_ACCESS_TOKEN || null;
-let tokenExpiryTime = null;
+const TOKEN_FILE = path.resolve(process.cwd(), '.fyers_token.json');
+
+function loadPersistedToken() {
+  try {
+    if (fs.existsSync(TOKEN_FILE)) {
+      const data = JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf-8'));
+      if (data.token && (!data.expiry || new Date(data.expiry) > new Date())) {
+        return { token: data.token, expiry: data.expiry ? new Date(data.expiry) : null };
+      }
+    }
+  } catch (e) {
+    // ignore
+  }
+  return null;
+}
+
+const persisted = loadPersistedToken();
+let activeAccessToken = env.FYERS_ACCESS_TOKEN || persisted?.token || null;
+let tokenExpiryTime = persisted?.expiry || null;
 
 export function getActiveToken() {
   return activeAccessToken;
@@ -11,6 +30,11 @@ export function getActiveToken() {
 export function setActiveToken(token, expiresInSeconds = 86400) {
   activeAccessToken = token;
   tokenExpiryTime = new Date(Date.now() + expiresInSeconds * 1000);
+  try {
+    fs.writeFileSync(TOKEN_FILE, JSON.stringify({ token, expiry: tokenExpiryTime.toISOString() }));
+  } catch (e) {
+    // ignore file write error on restricted filesystems
+  }
 }
 
 export function isTokenValid() {
